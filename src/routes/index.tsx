@@ -10,12 +10,14 @@ import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { BudgetProgress } from "@/components/dashboard/BudgetProgress";
 import { AiInsightsCard } from "@/components/dashboard/AiInsightsCard";
 import { AddTransactionDialog } from "@/components/dashboard/AddTransactionDialog";
+import { FinanceProvider, useFinance } from "@/lib/finance-store";
 import {
-  baseCategoryTotals,
-  baseTotals,
-  initialTransactions,
-  type Transaction,
-} from "@/lib/finance-data";
+  categoryTotals,
+  computeTotals,
+  monthlySeries,
+  yearlySeries,
+} from "@/lib/finance-selectors";
+import { monthPeriod, SEED_YEAR, type Transaction } from "@/lib/finance-data";
 
 const title = "Finance Tracker — AI-Powered Personal Finance Dashboard";
 const description =
@@ -30,47 +32,54 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: description },
     ],
   }),
-  component: Dashboard,
+  component: DashboardPage,
 });
 
+function DashboardPage() {
+  return (
+    <FinanceProvider>
+      <Dashboard />
+    </FinanceProvider>
+  );
+}
+
 function Dashboard() {
+  const { state, addTransaction } = useFinance();
   const [loading, setLoading] = useState(true);
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
 
   useEffect(() => {
     const id = setTimeout(() => setLoading(false), 700);
     return () => clearTimeout(id);
   }, []);
 
-  const added = useMemo(
-    () => transactions.filter((t) => !initialTransactions.some((i) => i.id === t.id)),
-    [transactions],
+  // Latest month present in the data set.
+  const period = useMemo(() => {
+    const latest = state.transactions.reduce((acc, t) => (t.date > acc ? t.date : acc), "");
+    const d = latest ? new Date(`${latest}T00:00:00`) : new Date(SEED_YEAR, 7, 1);
+    return monthPeriod(d.getFullYear(), d.getMonth());
+  }, [state.transactions]);
+
+  const totals = useMemo(() => computeTotals(state, period), [state, period]);
+
+  const categoryData = useMemo(
+    () => categoryTotals(state.transactions, period),
+    [state.transactions, period],
   );
 
-  const totals = useMemo(() => {
-    const extraIncome = added.filter((t) => t.kind === "income").reduce((s, t) => s + t.amount, 0);
-    const extraExpense = added.filter((t) => t.kind === "expense").reduce((s, t) => s + t.amount, 0);
-    const income = baseTotals.income + extraIncome;
-    const expenses = baseTotals.expenses + extraExpense;
-    return {
-      balance: baseTotals.balance + extraIncome - extraExpense,
-      income,
-      expenses,
-      savings: income - expenses,
-      budget: baseTotals.budget,
-    };
-  }, [added]);
+  const monthly = useMemo(
+    () => monthlySeries(state.transactions, Number(period.from.slice(0, 4))),
+    [state.transactions, period],
+  );
 
-  const categoryData = useMemo(() => {
-    const totalsByCat = { ...baseCategoryTotals };
-    for (const t of added) {
-      if (t.kind !== "expense") continue;
-      totalsByCat[t.category] = (totalsByCat[t.category] ?? 0) + t.amount;
-    }
-    return Object.entries(totalsByCat).map(([name, value]) => ({ name, value }));
-  }, [added]);
+  const yearly = useMemo(
+    () => yearlySeries(state.transactions).map((r) => ({ ...r })),
+    [state.transactions],
+  );
 
-  const addTransaction = (t: Transaction) => setTransactions((prev) => [t, ...prev]);
+  const handleAdd = (t: Transaction) => {
+    const { id: _id, ...rest } = t;
+    addTransaction(rest);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,28 +91,24 @@ function Dashboard() {
             <div>
               <p className="text-sm text-muted-foreground">Good evening,</p>
               <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-                Srujan
+                {state.settings.userName}
               </h1>
             </div>
-            <AddTransactionDialog onAdd={addTransaction} />
+            <AddTransactionDialog onAdd={handleAdd} />
           </header>
 
           <SummaryCards totals={totals} loading={loading} />
 
-          <ExpensesChart loading={loading} currentMonthExpenses={totals.expenses} />
+          <ExpensesChart loading={loading} monthly={monthly} yearly={yearly} />
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <IncomeExpensesChart
-              loading={loading}
-              currentIncome={totals.income}
-              currentExpenses={totals.expenses}
-            />
+            <IncomeExpensesChart loading={loading} data={monthly} />
             <CategoryDonut data={categoryData} loading={loading} />
           </div>
 
           <div className="grid gap-6 xl:grid-cols-3">
             <div className="xl:col-span-2">
-              <RecentTransactions transactions={transactions} loading={loading} />
+              <RecentTransactions transactions={state.transactions} loading={loading} />
             </div>
             <div className="space-y-6">
               <BudgetProgress spent={totals.expenses} budget={totals.budget} loading={loading} />

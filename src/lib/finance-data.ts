@@ -224,12 +224,12 @@ function buildSeedTransactions(): Transaction[] {
       parts.forEach((part, j) => {
         out.push({
           id: `seed-exp-${plan.month}-${i}-${j}`,
-          name: names[(i + j) % names.length],
+          name: names[(i + j) % names.length] ?? "Expense",
           category,
-          date: `${SEED_YEAR}-${pad(plan.month)}-${pad(DAY_CYCLE[(i + j) % DAY_CYCLE.length])}`,
+          date: `${SEED_YEAR}-${pad(plan.month)}-${pad(DAY_CYCLE[(i + j) % DAY_CYCLE.length] ?? 5)}`,
           amount: part,
           kind: "expense",
-          method: METHOD_CYCLE[n++ % METHOD_CYCLE.length],
+          method: METHOD_CYCLE[n++ % METHOD_CYCLE.length] ?? "UPI",
         });
       });
     });

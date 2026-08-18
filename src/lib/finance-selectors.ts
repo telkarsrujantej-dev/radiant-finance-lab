@@ -56,8 +56,10 @@ export function monthlySeries(transactions: Transaction[], year: number) {
   for (const t of transactions) {
     if (Number(t.date.slice(0, 4)) !== year) continue;
     const m = Number(t.date.slice(5, 7)) - 1;
-    if (t.kind === "expense") rows[m].expenses += t.amount;
-    else rows[m].income += t.amount;
+    const row = rows[m];
+    if (!row) continue;
+    if (t.kind === "expense") row.expenses += t.amount;
+    else row.income += t.amount;
   }
   // Only show months up to the last month with data (keeps Jan–Aug for the seed year).
   const last = rows.reduce((acc, r, i) => (r.expenses || r.income ? i : acc), 0);
