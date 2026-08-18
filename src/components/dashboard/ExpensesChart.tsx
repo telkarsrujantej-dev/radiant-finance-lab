@@ -11,7 +11,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { formatINR, monthlyExpenses, yearlyExpenses } from "@/lib/finance-data";
+import { formatINR } from "@/lib/finance-data";
 
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
@@ -23,21 +23,20 @@ function ChartTooltip({ active, payload, label }: any) {
   );
 }
 
+type Point = { label: string; expenses: number };
+
 export function ExpensesChart({
   loading,
-  currentMonthExpenses,
+  monthly,
+  yearly,
 }: {
   loading: boolean;
-  currentMonthExpenses: number;
+  monthly: Point[];
+  yearly: Point[];
 }) {
   const [range, setRange] = useState<"monthly" | "yearly">("monthly");
 
-  const data =
-    range === "monthly"
-      ? monthlyExpenses.map((m, i) =>
-          i === monthlyExpenses.length - 1 ? { ...m, expenses: currentMonthExpenses } : m,
-        )
-      : yearlyExpenses;
+  const data = range === "monthly" ? monthly : yearly;
 
   if (loading) return <Skeleton className="h-[380px] rounded-2xl" />;
 

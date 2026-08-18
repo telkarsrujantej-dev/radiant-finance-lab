@@ -1,7 +1,7 @@
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatINR, monthlyExpenses } from "@/lib/finance-data";
+import { formatINR } from "@/lib/finance-data";
 
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
@@ -21,20 +21,12 @@ function ChartTooltip({ active, payload, label }: any) {
 
 export function IncomeExpensesChart({
   loading,
-  currentIncome,
-  currentExpenses,
+  data,
 }: {
   loading: boolean;
-  currentIncome: number;
-  currentExpenses: number;
+  data: { label: string; income: number; expenses: number }[];
 }) {
   if (loading) return <Skeleton className="h-[360px] rounded-2xl" />;
-
-  const data = monthlyExpenses.map((m, i) =>
-    i === monthlyExpenses.length - 1
-      ? { ...m, income: currentIncome, expenses: currentExpenses }
-      : m,
-  );
 
   return (
     <Card className="animate-fade-in rounded-2xl border-border/60 p-5 shadow-[var(--shadow-soft)] transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]">
