@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { NotificationBell } from "@/components/layout/NotificationBell";
-import { FinanceProvider } from "@/lib/finance-store";
 
 export function PageShell({
   title,
@@ -15,7 +14,6 @@ export function PageShell({
   children: ReactNode;
 }) {
   return (
-    <FinanceProvider>
       <div className="min-h-screen bg-background">
         <AppSidebar />
         <main className="lg:pl-64">
@@ -36,6 +34,5 @@ export function PageShell({
           </div>
         </main>
       </div>
-    </FinanceProvider>
   );
 }
