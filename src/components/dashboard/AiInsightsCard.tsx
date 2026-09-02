@@ -1,4 +1,5 @@
 import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,7 +17,7 @@ export function AiInsightsCard({ loading }: { loading: boolean }) {
         <h2 className="font-display text-lg font-semibold tracking-tight">AI Financial Insights</h2>
       </div>
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-        AI insights will appear here based on your spending patterns.
+        Personalized insights are coming soon. Your local finance data stays right here until then.
       </p>
       <div className="mt-4 space-y-2">
         {[80, 60, 70].map((w, i) => (
@@ -27,9 +28,11 @@ export function AiInsightsCard({ loading }: { loading: boolean }) {
           />
         ))}
       </div>
-      <Button className="group mt-5 w-full rounded-xl">
-        Explore AI Insights
-        <ArrowRight className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+      <Button asChild className="group mt-5 w-full rounded-xl">
+        <Link to="/ai-insights">
+          Coming Soon
+          <ArrowRight className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+        </Link>
       </Button>
     </Card>
   );
