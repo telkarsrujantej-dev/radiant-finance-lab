@@ -14,7 +14,7 @@ type Totals = {
 
 export function SummaryCards({ totals, loading }: { totals: Totals; loading: boolean }) {
   const cards = [
-    { label: "Total Balance", value: totals.balance, icon: Wallet, change: 8.2, good: true },
+    { label: "Current Balance", value: totals.balance, icon: Wallet, change: 8.2, good: true },
     { label: "Income", value: totals.income, icon: TrendingUp, change: 4.5, good: true },
     { label: "Expenses", value: totals.expenses, icon: TrendingDown, change: 12.8, good: false },
     { label: "Savings", value: totals.savings, icon: PiggyBank, change: 6.1, good: true },
