@@ -82,8 +82,8 @@ function BudgetsPage() {
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     const value = Number(limit);
-    if (!category) return toast.error("Pick a category");
-    if (!value || value <= 0) return toast.error("Enter a valid limit");
+    if (!category) toast.error("Pick a category"); return;
+    if (!value || value <= 0) toast.error("Enter a valid limit"); return;
     upsertBudget({ id: editing?.id ?? "", category, limit: value });
     toast.success(editing ? "Budget updated" : "Budget created");
     setOpen(false);
