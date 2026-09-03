@@ -39,8 +39,8 @@ function SettingsPage() {
     event.preventDefault();
     const budget = Number(monthlyBudget);
     const balance = Number(openingBalance);
-    if (!userName.trim()) toast.error("Enter your name"); return;
-    if (budget <= 0 || balance < 0) toast.error("Check your amounts"); return;
+    if (!userName.trim()) {      toast.error("Enter your name");      return;    }
+    if (budget <= 0 || balance < 0) {      toast.error("Check your amounts");      return;    }
     updateSettings({ userName: userName.trim(), monthlyBudget: budget, openingBalance: balance });
     toast.success("Settings saved");
   };

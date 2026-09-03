@@ -99,10 +99,10 @@ function RecurringPage() {
   const save = (event: React.FormEvent) => {
     event.preventDefault();
     const value = Number(amount);
-    if (!name.trim()) toast.error("Name this recurring item"); return;
-    if (!value || value <= 0) toast.error("Enter a valid amount"); return;
-    if (!category) toast.error("Pick a category"); return;
-    if (!nextDate) toast.error("Choose the next date"); return;
+    if (!name.trim()) {      toast.error("Name this recurring item");      return;    }
+    if (!value || value <= 0) {      toast.error("Enter a valid amount");      return;    }
+    if (!category) {      toast.error("Pick a category");      return;    }
+    if (!nextDate) {      toast.error("Choose the next date");      return;    }
 
     upsertRecurring({
       id: editing?.id ?? "",
