@@ -38,7 +38,8 @@ import {
 } from "@/lib/finance-data";
 
 const title = "Recurring Payments — Finance Tracker";
-const description = "Keep recurring income and payments organized with local reminders and controls.";
+const description =
+  "Keep recurring income and payments organized with local reminders and controls.";
 
 export const Route = createFileRoute("/recurring")({
   head: () => ({
@@ -99,10 +100,22 @@ function RecurringPage() {
   const save = (event: React.FormEvent) => {
     event.preventDefault();
     const value = Number(amount);
-    if (!name.trim()) return toast.error("Name this recurring item");
-    if (!value || value <= 0) return toast.error("Enter a valid amount");
-    if (!category) return toast.error("Pick a category");
-    if (!nextDate) return toast.error("Choose the next date");
+    if (!name.trim()) {
+      toast.error("Name this recurring item");
+      return;
+    }
+    if (!value || value <= 0) {
+      toast.error("Enter a valid amount");
+      return;
+    }
+    if (!category) {
+      toast.error("Pick a category");
+      return;
+    }
+    if (!nextDate) {
+      toast.error("Choose the next date");
+      return;
+    }
 
     upsertRecurring({
       id: editing?.id ?? "",
@@ -134,19 +147,31 @@ function RecurringPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="rounded-2xl border-border/60 p-5 shadow-[var(--shadow-soft)]">
           <p className="text-sm text-muted-foreground">Active items</p>
-          <p className="font-display mt-2 text-2xl font-semibold">{state.recurring.filter((r) => r.active).length}</p>
+          <p className="font-display mt-2 text-2xl font-semibold">
+            {state.recurring.filter((r) => r.active).length}
+          </p>
         </Card>
         <Card className="rounded-2xl border-border/60 p-5 shadow-[var(--shadow-soft)]">
           <p className="text-sm text-muted-foreground">Monthly outflow</p>
           <p className="font-display mt-2 text-2xl font-semibold">
-            {formatINR(state.recurring.filter((r) => r.active && r.kind === "expense" && r.frequency === "Monthly").reduce((sum, r) => sum + r.amount, 0))}
+            {formatINR(
+              state.recurring
+                .filter((r) => r.active && r.kind === "expense" && r.frequency === "Monthly")
+                .reduce((sum, r) => sum + r.amount, 0),
+            )}
           </p>
         </Card>
         <Card className="rounded-2xl border-border/60 p-5 shadow-[var(--shadow-soft)]">
           <p className="text-sm text-muted-foreground">Next due</p>
           <p className="font-display mt-2 text-2xl font-semibold">
-            {state.recurring.filter((r) => r.active).sort((a, b) => a.nextDate.localeCompare(b.nextDate))[0]?.nextDate
-              ? formatDate(state.recurring.filter((r) => r.active).sort((a, b) => a.nextDate.localeCompare(b.nextDate))[0]?.nextDate ?? "")
+            {state.recurring
+              .filter((r) => r.active)
+              .sort((a, b) => a.nextDate.localeCompare(b.nextDate))[0]?.nextDate
+              ? formatDate(
+                  state.recurring
+                    .filter((r) => r.active)
+                    .sort((a, b) => a.nextDate.localeCompare(b.nextDate))[0]?.nextDate ?? "",
+                )
               : "—"}
           </p>
         </Card>
@@ -161,54 +186,207 @@ function RecurringPage() {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl", item.kind === "income" ? "bg-success/12 text-success" : "bg-accent text-foreground")}>
-                  {item.kind === "income" ? <Wallet className="h-[18px] w-[18px]" /> : <Repeat className="h-[18px] w-[18px]" />}
+                <span
+                  className={cn(
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                    item.kind === "income"
+                      ? "bg-success/12 text-success"
+                      : "bg-accent text-foreground",
+                  )}
+                >
+                  {item.kind === "income" ? (
+                    <Wallet className="h-[18px] w-[18px]" />
+                  ) : (
+                    <Repeat className="h-[18px] w-[18px]" />
+                  )}
                 </span>
                 <div className="min-w-0">
                   <p className="truncate font-display text-base font-semibold">{item.name}</p>
-                  <p className="truncate text-sm text-muted-foreground">{item.category} · {item.method}</p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {item.category} · {item.method}
+                  </p>
                 </div>
               </div>
-              <span className={cn("rounded-full px-2.5 py-1 text-xs font-medium", item.active ? "bg-success/12 text-success" : "bg-muted text-muted-foreground")}>
+              <span
+                className={cn(
+                  "rounded-full px-2.5 py-1 text-xs font-medium",
+                  item.active ? "bg-success/12 text-success" : "bg-muted text-muted-foreground",
+                )}
+              >
                 {item.active ? "Active" : "Paused"}
               </span>
             </div>
             <div className="mt-5 flex items-end justify-between gap-3">
               <div>
-                <p className={cn("font-display text-xl font-semibold", item.kind === "income" && "text-success")}>{item.kind === "income" ? "+" : "−"}{formatINR(item.amount)}</p>
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground"><CalendarClock className="h-3.5 w-3.5" />{item.frequency} · {formatDate(item.nextDate)}</p>
+                <p
+                  className={cn(
+                    "font-display text-xl font-semibold",
+                    item.kind === "income" && "text-success",
+                  )}
+                >
+                  {item.kind === "income" ? "+" : "−"}
+                  {formatINR(item.amount)}
+                </p>
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <CalendarClock className="h-3.5 w-3.5" />
+                  {item.frequency} · {formatDate(item.nextDate)}
+                </p>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="outline" className="rounded-xl" onClick={() => toggleRecurring(item.id)}>{item.active ? "Pause" : "Resume"}</Button>
-                <Button variant="ghost" size="icon" aria-label="Edit recurring item" onClick={() => openEdit(item)}><Pencil className="h-4 w-4" /></Button>
-                <Button variant="ghost" size="icon" aria-label="Delete recurring item" onClick={() => { deleteRecurring(item.id); toast.success("Recurring item removed"); }}><Trash2 className="h-4 w-4 text-danger" /></Button>
+                <Button
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={() => toggleRecurring(item.id)}
+                >
+                  {item.active ? "Pause" : "Resume"}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Edit recurring item"
+                  onClick={() => openEdit(item)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Delete recurring item"
+                  onClick={() => {
+                    deleteRecurring(item.id);
+                    toast.success("Recurring item removed");
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 text-danger" />
+                </Button>
               </div>
             </div>
           </Card>
         ))}
       </div>
 
-      <Dialog open={open} onOpenChange={(value) => { setOpen(value); if (!value) reset(); }}>
+      <Dialog
+        open={open}
+        onOpenChange={(value) => {
+          setOpen(value);
+          if (!value) reset();
+        }}
+      >
         <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl sm:max-w-[480px]">
           <DialogHeader>
-            <DialogTitle className="font-display">{editing ? "Edit Recurring Item" : "Add Recurring Item"}</DialogTitle>
-            <DialogDescription>Keep a local reminder for income or payments that repeat.</DialogDescription>
+            <DialogTitle className="font-display">
+              {editing ? "Edit Recurring Item" : "Add Recurring Item"}
+            </DialogTitle>
+            <DialogDescription>
+              Keep a local reminder for income or payments that repeat.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={save} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2"><Label htmlFor="recurring-name">Name</Label><Input id="recurring-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Internet" /></div>
-              <div className="space-y-2"><Label htmlFor="recurring-amount">Amount (₹)</Label><Input id="recurring-amount" type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} /></div>
+              <div className="space-y-2">
+                <Label htmlFor="recurring-name">Name</Label>
+                <Input
+                  id="recurring-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Internet"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="recurring-amount">Amount (₹)</Label>
+                <Input
+                  id="recurring-amount"
+                  type="number"
+                  min="1"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2"><Label>Type</Label><Select value={kind} onValueChange={(value) => { setKind(value as TxKind); setCategory(""); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="expense">Expense</SelectItem><SelectItem value="income">Income</SelectItem></SelectContent></Select></div>
-              <div className="space-y-2"><Label>Frequency</Label><Select value={frequency} onValueChange={(value) => setFrequency(value as Frequency)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{FREQUENCIES.map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select></div>
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select
+                  value={kind}
+                  onValueChange={(value) => {
+                    setKind(value as TxKind);
+                    setCategory("");
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="expense">Expense</SelectItem>
+                    <SelectItem value="income">Income</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Frequency</Label>
+                <Select
+                  value={frequency}
+                  onValueChange={(value) => setFrequency(value as Frequency)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FREQUENCIES.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2"><Label>Category</Label><Select value={category} onValueChange={setCategory}><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{categories.map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select></div>
-              <div className="space-y-2"><Label>Payment method</Label><Select value={method} onValueChange={setMethod}><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{PAYMENT_METHODS.map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select></div>
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Payment method</Label>
+                <Select value={method} onValueChange={setMethod}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PAYMENT_METHODS.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="space-y-2"><Label htmlFor="recurring-date">Next date</Label><Input id="recurring-date" type="date" value={nextDate} onChange={(e) => setNextDate(e.target.value)} /></div>
-            <DialogFooter><Button type="submit" className="w-full rounded-xl">Save Recurring Item</Button></DialogFooter>
+            <div className="space-y-2">
+              <Label htmlFor="recurring-date">Next date</Label>
+              <Input
+                id="recurring-date"
+                type="date"
+                value={nextDate}
+                onChange={(e) => setNextDate(e.target.value)}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" className="w-full rounded-xl">
+                Save Recurring Item
+              </Button>
+            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>

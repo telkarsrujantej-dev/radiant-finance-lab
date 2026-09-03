@@ -8,7 +8,7 @@ export type Transaction = {
   amount: number;
   kind: TxKind;
   method: string;
-  notes?: string;
+  notes?: string | undefined;
 };
 
 export type Budget = {

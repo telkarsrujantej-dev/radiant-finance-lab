@@ -66,9 +66,18 @@ export function TransactionDialog({
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const value = Number(amount);
-    if (!value || value <= 0) return toast.error("Enter a valid amount");
-    if (!description.trim()) return toast.error("Add a short description");
-    if (!category) return toast.error("Pick a category");
+    if (!value || value <= 0) {
+      toast.error("Enter a valid amount");
+      return;
+    }
+    if (!description.trim()) {
+      toast.error("Add a short description");
+      return;
+    }
+    if (!category) {
+      toast.error("Pick a category");
+      return;
+    }
 
     const payload = {
       name: description.trim(),
