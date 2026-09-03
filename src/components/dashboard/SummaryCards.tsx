@@ -1,4 +1,12 @@
-import { ArrowDownRight, ArrowUpRight, PiggyBank, Target, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  PiggyBank,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -45,7 +53,9 @@ export function SummaryCards({ totals, loading }: { totals: Totals; loading: boo
               <Icon className="h-[18px] w-[18px]" />
             </span>
           </div>
-          <p className="font-display mt-4 text-2xl font-semibold tracking-tight">{formatINR(value)}</p>
+          <p className="font-display mt-4 text-2xl font-semibold tracking-tight">
+            {formatINR(value)}
+          </p>
           <div className="mt-2 flex items-center gap-1.5 text-xs">
             {change === 0 ? (
               <span className="text-muted-foreground">On track this month</span>
@@ -57,7 +67,11 @@ export function SummaryCards({ totals, loading }: { totals: Totals; loading: boo
                     good ? "bg-success/12 text-success" : "bg-danger/12 text-danger",
                   )}
                 >
-                  {good ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                  {good ? (
+                    <ArrowUpRight className="h-3 w-3" />
+                  ) : (
+                    <ArrowDownRight className="h-3 w-3" />
+                  )}
                   {change}%
                 </span>
                 <span className="text-muted-foreground">vs last month</span>

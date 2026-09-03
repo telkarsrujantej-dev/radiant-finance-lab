@@ -68,9 +68,15 @@ function SavingsPage() {
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {      toast.error("Name the goal");      return;    }
+    if (!name.trim()) {
+      toast.error("Name the goal");
+      return;
+    }
     const t = Number(target);
-    if (!t || t <= 0) {      toast.error("Enter a valid target");      return;    }
+    if (!t || t <= 0) {
+      toast.error("Enter a valid target");
+      return;
+    }
     upsertGoal({
       id: editing?.id ?? "",
       name: name.trim(),
@@ -115,7 +121,12 @@ function SavingsPage() {
                   </div>
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" aria-label="Edit goal" onClick={() => openEdit(g)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Edit goal"
+                    onClick={() => openEdit(g)}
+                  >
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
@@ -219,7 +230,10 @@ function SavingsPage() {
             onSubmit={(e) => {
               e.preventDefault();
               const value = Number(moneyAmount);
-              if (!value || value <= 0) {                toast.error("Enter a valid amount");                return;              }
+              if (!value || value <= 0) {
+                toast.error("Enter a valid amount");
+                return;
+              }
               if (moneyFor) addToGoal(moneyFor.id, value);
               toast.success(`${formatINR(value)} added to ${moneyFor?.name}`);
               setMoneyFor(null);
