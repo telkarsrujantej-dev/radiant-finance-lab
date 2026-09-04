@@ -41,7 +41,7 @@ const title = "Recurring Payments — Finance Tracker";
 const description =
   "Keep recurring income and payments organized with local reminders and controls.";
 
-export const Route = createFileRoute("/recurring")({
+export const Route = createFileRoute("/_authenticated/recurring")({
   head: () => ({
     meta: [
       { title },

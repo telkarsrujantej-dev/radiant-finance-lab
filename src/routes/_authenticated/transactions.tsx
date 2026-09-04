@@ -57,7 +57,7 @@ const title = "Transactions — Finance Tracker";
 const description =
   "Search, filter, edit and export every income and expense recorded in your Finance Tracker.";
 
-export const Route = createFileRoute("/transactions")({
+export const Route = createFileRoute("/_authenticated/transactions")({
   head: () => ({
     meta: [
       { title },

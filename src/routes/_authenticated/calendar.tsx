@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 const title = "Financial Calendar — Finance Tracker";
 const description = "See income and expenses laid out across your local financial calendar.";
 
-export const Route = createFileRoute("/calendar")({
+export const Route = createFileRoute("/_authenticated/calendar")({
   head: () => ({
     meta: [
       { title },

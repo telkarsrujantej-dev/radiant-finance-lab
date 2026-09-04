@@ -14,7 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      finance_workspaces: {
+        Row: {
+          budgets: Json
+          created_at: string
+          goals: Json
+          id: string
+          recurring: Json
+          settings: Json
+          transactions: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budgets?: Json
+          created_at?: string
+          goals?: Json
+          id?: string
+          recurring?: Json
+          settings?: Json
+          transactions?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budgets?: Json
+          created_at?: string
+          goals?: Json
+          id?: string
+          recurring?: Json
+          settings?: Json
+          transactions?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          monthly_budget: number
+          opening_balance: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          id: string
+          monthly_budget?: number
+          opening_balance?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          monthly_budget?: number
+          opening_balance?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -24,7 +24,7 @@ const title = "Analytics — Finance Tracker";
 const description =
   "Compare local income, expenses, categories and savings trends across any period.";
 
-export const Route = createFileRoute("/analytics")({
+export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({
     meta: [
       { title },

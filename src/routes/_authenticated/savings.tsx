@@ -22,7 +22,7 @@ import { formatDate, formatINR, type Goal } from "@/lib/finance-data";
 const title = "Savings Goals — Finance Tracker";
 const description = "Create savings goals, add money and track progress toward each target date.";
 
-export const Route = createFileRoute("/savings")({
+export const Route = createFileRoute("/_authenticated/savings")({
   head: () => ({
     meta: [
       { title },
