@@ -26,7 +26,7 @@ const title = "Finance Tracker — Personal Finance Dashboard";
 const description =
   "Track balance, income, expenses, budgets and spending categories in one clean, modern finance dashboard.";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title },

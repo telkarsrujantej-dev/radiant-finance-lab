@@ -24,7 +24,7 @@ import { useFinance } from "@/lib/finance-store";
 const title = "Settings — Finance Tracker";
 const description = "Adjust your local Finance Tracker preferences and starting figures.";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
       { title },

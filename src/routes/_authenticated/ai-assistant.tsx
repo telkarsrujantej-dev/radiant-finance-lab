@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 const title = "AI Assistant — Finance Tracker";
 const description = "A future conversational workspace for your Finance Tracker data.";
 
-export const Route = createFileRoute("/ai-assistant")({
+export const Route = createFileRoute("/_authenticated/ai-assistant")({
   head: () => ({
     meta: [
       { title },
