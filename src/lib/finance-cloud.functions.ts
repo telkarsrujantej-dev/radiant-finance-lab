@@ -16,21 +16,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function asState(value: unknown): FinanceState {
   if (!isRecord(value)) return emptyState;
+  const rawSettings = isRecord(value["settings"]) ? value["settings"] : emptyState.settings;
   return {
-    transactions: Array.isArray(value.transactions) ? value.transactions : [],
-    budgets: Array.isArray(value.budgets) ? value.budgets : [],
-    goals: Array.isArray(value.goals) ? value.goals : [],
-    recurring: Array.isArray(value.recurring) ? value.recurring : [],
-    settings: isRecord(value.settings)
-      ? {
-          userName: typeof value.settings.userName === "string" ? value.settings.userName : "Srujan",
-          monthlyBudget:
-            typeof value.settings.monthlyBudget === "number" ? value.settings.monthlyBudget : 30000,
-          openingBalance:
-            typeof value.settings.openingBalance === "number" ? value.settings.openingBalance : 25000,
-        }
-      : emptyState.settings,
-  } as FinanceState;
+    transactions: Array.isArray(value["transactions"]) ? value["transactions"] : [],
+    budgets: Array.isArray(value["budgets"]) ? value["budgets"] : [],
+    goals: Array.isArray(value["goals"]) ? value["goals"] : [],
+    recurring: Array.isArray(value["recurring"]) ? value["recurring"] : [],
+    settings: {
+      userName: typeof rawSettings["userName"] === "string" ? rawSettings["userName"] : "Srujan",
+      monthlyBudget:
+        typeof rawSettings["monthlyBudget"] === "number" ? rawSettings["monthlyBudget"] : 30000,
+      openingBalance:
+        typeof rawSettings["openingBalance"] === "number" ? rawSettings["openingBalance"] : 25000,
+    },
+  };
 }
 
 export const loadFinanceWorkspace = createServerFn({ method: "GET" })
