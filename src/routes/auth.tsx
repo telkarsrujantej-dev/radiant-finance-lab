@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Check, Loader2, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,6 +14,11 @@ const title = "Sign in — Finance Tracker";
 const description = "Sign in to securely access your personal Finance Tracker workspace.";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    next: typeof search["next"] === "string" && search["next"].startsWith("/")
+      ? search["next"]
+      : undefined,
+  }),
   head: () => ({
     meta: [
       { title },
@@ -29,7 +34,6 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const search = useSearch({ from: "/auth" });
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -121,7 +125,6 @@ function AuthPage() {
             <Button type="submit" className="w-full rounded-xl" disabled={loading}>{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{mode === "signin" ? "Sign in" : "Create account"}<ArrowRight className="h-4 w-4" /></>}</Button>
           </form>
           <p className="mt-6 text-center text-sm text-muted-foreground">{mode === "signin" ? "New to Finance Tracker?" : "Already have an account?"}{" "}<button type="button" className="font-medium text-primary hover:underline" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>{mode === "signin" ? "Create an account" : "Sign in"}</button></p>
-          {search.next && <p className="mt-4 text-center text-xs text-muted-foreground">You’ll return to your requested page after signing in.</p>}
         </Card>
       </div>
     </main>
