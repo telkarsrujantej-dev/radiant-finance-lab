@@ -34,7 +34,7 @@ function AccountMenu() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    await navigate({ to: "/auth", replace: true });
+    await navigate({ to: "/auth", search: {}, replace: true });
   };
 
   if (!email) return null;
