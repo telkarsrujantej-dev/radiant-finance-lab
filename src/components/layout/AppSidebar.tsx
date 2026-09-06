@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -11,6 +12,7 @@ import {
   Sparkles,
   Bot,
   Settings,
+  Users,
   Menu,
   Moon,
   Sun,
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { isAdmin } from "@/lib/members.functions";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/" },
