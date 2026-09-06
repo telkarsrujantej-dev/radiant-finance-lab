@@ -1,31 +1,37 @@
-# UPI Integration — Prototype
+# Admin Members View
 
-Real auto-sync from GPay/PhonePe/Paytm isn't possible: those apps have no public API for reading your transactions (only RBI-licensed Account Aggregator / bank partners can). So this stays a frontend prototype that does the two things that genuinely work in a browser, plus a realistic linked-accounts UI.
+Add a secure, owner-only "Members" page that lists every registered user in the Finance Tracker app.
 
-## 1. Linked Accounts page (`/upi`)
+## What we will build
 
-New sidebar entry "UPI & Accounts".
+1. **Admin role system**
+   - Create a `user_roles` table and a `has_role` security definer function.
+   - Mark the current owner account as `admin`.
 
-- Cards for GPay, PhonePe, Paytm, BHIM with logo mark, masked UPI ID (e.g. `srujan@okhdfcbank`), status chip (Connected / Not linked), last-synced time.
-- "Link account" opens a dialog: enter UPI ID → simulated verification spinner → account appears Connected with a success toast.
-- "Sync now" on a connected card: short loading state, then pulls in 3-5 realistic mock UPI transactions (Swiggy, Uber, Amazon, electricity bill…) into the dashboard's transaction list and recomputes totals.
-- Clear note on the page explaining sync is simulated in this prototype and what real integration would require (Account Aggregator / bank partner).
+2. **Admin-only server function**
+   - Add `listMembers` that first verifies the caller has the `admin` role, then reads the auth users list through the service-role client.
+   - Return only safe fields: user id, email, sign-up date, last sign-in date, and provider.
 
-## 2. Pay via UPI (this one is real)
+3. **Admin route and layout**
+   - Add `src/routes/_authenticated/_admin/members.tsx` gated by an admin-only `beforeLoad` check.
+   - Redirect non-admins to the dashboard.
 
-- "Pay via UPI" button in the dashboard header and on the new page.
-- Dialog: payee UPI ID, amount, note → builds a standard `upi://pay?pa=…&pn=…&am=…&cu=INR&tn=…` deep link.
-- On mobile, opens the user's installed UPI app chooser. On desktop, shows a QR code of the same link to scan with a phone.
-- After returning, an "I paid / Mark as paid" action logs the expense into the dashboard with method "UPI".
+4. **Members page UI**
+   - Total member count card.
+   - Sortable table with email, joined date, last active, and provider.
+   - Empty state when there are no members besides the owner.
+   - Uses the existing design tokens and PageShell.
 
-## 3. Shared state
+5. **Sidebar navigation**
+   - Add a "Members" item in the AppSidebar, visible only to admins.
 
-Transactions currently live in `src/routes/index.tsx` local state. Lift them into a small React context provider (`FinanceProvider` in `src/lib/finance-store.tsx`) mounted in `__root.tsx`, so the UPI page and the dashboard share the same list and totals. Still frontend-only, no persistence, no backend.
+## Security notes
 
-## Technical notes
+- Emails are PII, so the members list is strictly admin-only via role check + admin route gate.
+- Direct `auth.users` access is done server-side with service role; the browser never sees the service key.
+- Non-admin users cannot reach the route or the server function.
 
-- New route `src/routes/upi.tsx` with its own head metadata; sidebar nav item added in `AppSidebar.tsx`.
-- New components under `src/components/dashboard/`: `LinkedAccounts.tsx`, `LinkUpiDialog.tsx`, `UpiPayDialog.tsx`.
-- Mock UPI merchants/accounts and the deep-link builder in `src/lib/upi.ts`.
-- QR rendering via a small `qrcode` package (client-only import).
-- Existing design tokens, shadcn dialogs, sonner toasts, skeleton loaders reused — no new color literals.
+## Out of scope
+
+- Real-time "currently online" users (this requires active session tracking; we can add it later if needed).
+- Member management actions such as banning or deleting accounts.
