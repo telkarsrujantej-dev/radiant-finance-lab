@@ -35,10 +35,33 @@ const navItems = [
   { label: "Settings", icon: Settings, to: "/settings" },
 ] as const;
 
+const adminNavItems = [
+  { label: "Members", icon: Users, to: "/members" },
+] as const;
+
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
+  const checkAdmin = useServerFn(isAdmin);
+  const [admin, setAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    checkAdmin()
+      .then(({ admin: isAdminUser }) => {
+        if (active) setAdmin(isAdminUser);
+      })
+      .catch(() => {
+        if (active) setAdmin(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [checkAdmin]);
+
+  const items = [...navItems, ...(admin ? adminNavItems : [])];
+
   return (
     <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 pb-3">
-      {navItems.map(({ label, icon: Icon, to }) => (
+      {items.map(({ label, icon: Icon, to }) => (
         <Link
           key={label}
           to={to}
