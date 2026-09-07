@@ -6,3 +6,4 @@
 - [x] Connect finance data to Lovable Cloud with per-user access rules.
 - [x] Add email/password authentication and protect finance workspace routes.
 - [x] Replace local-only CRUD persistence with database-backed operations and migration of existing browser data.
+- [x] Add admin role system and owner-only Members page.
