@@ -39,6 +39,14 @@ export function CategoryDonut({
       <h2 className="font-display text-lg font-semibold tracking-tight">Expense Categories</h2>
       <p className="text-sm text-muted-foreground">Where your money went</p>
 
+      {data.length === 0 ? (
+        <div className="mt-4 flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 px-5 text-center">
+          <p className="text-sm font-medium">No expenses in this period</p>
+          <p className="max-w-xs text-sm text-muted-foreground">
+            Choose another date range or add an expense to see your category breakdown.
+          </p>
+        </div>
+      ) : (
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="relative h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -82,6 +90,7 @@ export function CategoryDonut({
           ))}
         </ul>
       </div>
+      )}
     </Card>
   );
 }
