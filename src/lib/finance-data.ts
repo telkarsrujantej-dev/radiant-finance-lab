@@ -9,6 +9,7 @@ export type Transaction = {
   kind: TxKind;
   method: string;
   notes?: string | undefined;
+  source?: "manual" | "upi-import";
 };
 
 export type Budget = {

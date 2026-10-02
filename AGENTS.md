@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep provider-import provenance optional on finance transaction records so legacy workspace data remains readable while imported records can be distinguished.
