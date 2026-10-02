@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_authenticated/")({
 function Dashboard() {
   const { state } = useFinance();
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState<Period>(() => periodFromPreset("this-month"));
+  const [period, setPeriod] = useState<Period>(() => periodFromPreset("this-year"));
 
   useEffect(() => {
     const id = setTimeout(() => setLoading(false), 500);
