@@ -87,6 +87,7 @@ export function TransactionDialog({
       kind,
       method: method || "UPI",
       notes: notes.trim() || undefined,
+      source: initial?.source ?? "manual",
     };
 
     if (initial) {

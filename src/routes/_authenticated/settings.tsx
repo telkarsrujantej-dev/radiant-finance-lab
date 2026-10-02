@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { RotateCcw, Settings2 } from "lucide-react";
+import { CircleHelp, Link2, RotateCcw, Settings2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/layout/PageShell";
@@ -22,7 +22,7 @@ import {
 import { useFinance } from "@/lib/finance-store";
 
 const title = "Settings — Finance Tracker";
-const description = "Adjust your local Finance Tracker preferences and starting figures.";
+const description = "Manage your Finance Tracker preferences and review account connection status.";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -62,6 +62,37 @@ function SettingsPage() {
 
   return (
     <PageShell subtitle="Make it yours" title="Settings">
+      <div className="space-y-6">
+        <Card className="animate-fade-in rounded-2xl border-border/60 p-5 shadow-[var(--shadow-soft)] sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent">
+                <Link2 className="h-[18px] w-[18px]" />
+              </span>
+              <div>
+                <h2 className="font-display text-lg font-semibold tracking-tight">UPI &amp; bank sync</h2>
+                <p className="mt-1 text-sm text-muted-foreground">No account connected</p>
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-muted-foreground/60" />
+              Provider setup required
+            </span>
+          </div>
+          <div className="mt-5 grid gap-4 border-t border-border/60 pt-4 sm:grid-cols-[1fr_auto] sm:items-center">
+            <p className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+              <CircleHelp className="mt-0.5 h-4 w-4 shrink-0" />
+              Secure imports from UPI apps require an approved Indian banking-data provider and your consent. No UPI PIN or bank password is collected here.
+            </p>
+            <Button type="button" variant="outline" className="rounded-xl" disabled>
+              Connect unavailable
+            </Button>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Manual UPI entries remain available. Imported transactions will be marked separately once a provider is configured.
+          </p>
+        </Card>
+
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <Card className="rounded-2xl border-border/60 p-5 shadow-[var(--shadow-soft)] sm:p-6">
           <div className="flex items-center gap-3">
@@ -113,9 +144,8 @@ function SettingsPage() {
         </Card>
         <Card className="rounded-2xl border-border/60 p-5 shadow-[var(--shadow-soft)] sm:p-6">
           <h2 className="font-display text-lg font-semibold tracking-tight">Local data</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Your transactions, budgets, savings goals and recurring items are stored in this browser
-            for this prototype.
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Your transactions, budgets, savings goals and recurring items are saved to your private Finance Tracker account.
           </p>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -146,6 +176,7 @@ function SettingsPage() {
             </AlertDialogContent>
           </AlertDialog>
         </Card>
+      </div>
       </div>
     </PageShell>
   );

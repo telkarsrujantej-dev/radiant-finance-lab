@@ -61,7 +61,7 @@ export function RecentTransactions({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{t.name}</p>
                 <p className="truncate text-xs text-muted-foreground">
-                  {t.category} · {formatDate(t.date)}
+                  {t.category} · {formatDate(t.date)} · {t.source === "upi-import" ? "UPI import" : "Manual"}
                 </p>
               </div>
               <span

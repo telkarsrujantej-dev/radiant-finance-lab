@@ -85,9 +85,9 @@ export const CATEGORY_ICONS: Record<string, typeof Wallet> = {
 };
 
 function toCSV(rows: Transaction[]) {
-  const head = ["Date", "Name", "Category", "Type", "Method", "Amount", "Notes"];
+  const head = ["Date", "Name", "Category", "Type", "Method", "Amount", "Source", "Notes"];
   const body = rows.map((t) =>
-    [t.date, t.name, t.category, t.kind, t.method, t.amount, t.notes ?? ""]
+    [t.date, t.name, t.category, t.kind, t.method, t.amount, t.source === "upi-import" ? "UPI import" : "Manual", t.notes ?? ""]
       .map((v) => `"${String(v).replace(/"/g, '""')}"`)
       .join(","),
   );
@@ -221,7 +221,7 @@ function TransactionsPage() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{t.name}</p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {t.category} · {formatDate(t.date)} · {t.method}
+                      {t.category} · {formatDate(t.date)} · {t.method} · {t.source === "upi-import" ? "UPI import" : "Manual"}
                     </p>
                   </div>
                   <p
