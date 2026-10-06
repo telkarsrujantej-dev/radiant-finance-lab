@@ -10,3 +10,8 @@
 - [x] Add clear UPI sync readiness status and distinguish manual vs imported transaction sources.
 - [x] Fix dashboard expense category visibility for seeded data and empty periods.
 - [ ] Select an approved Indian Account Aggregator/banking-data provider and complete its credentials and compliance setup before implementing live consent and import flows.
+- [ ] Add one account-saved Finance Assistant conversation with Lovable AI.
+- [ ] Add AI-powered finance insights with current workspace context.
+- [ ] Add savings goal deposits and withdrawals with optional transaction records.
+- [ ] Add CSV statement import with mapping and duplicate protection.
+- [ ] Add currency preferences and empty-workspace onboarding.
