@@ -7,7 +7,7 @@ const emptyState: FinanceState = {
   budgets: [],
   goals: [],
   recurring: [],
-  settings: { userName: "Srujan", monthlyBudget: 30000, openingBalance: 25000 },
+  settings: { userName: "Srujan", monthlyBudget: 30000, openingBalance: 25000, currency: "INR" },
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -28,6 +28,10 @@ function asState(value: unknown): FinanceState {
         typeof rawSettings["monthlyBudget"] === "number" ? rawSettings["monthlyBudget"] : 30000,
       openingBalance:
         typeof rawSettings["openingBalance"] === "number" ? rawSettings["openingBalance"] : 25000,
+      currency:
+        rawSettings["currency"] === "USD" || rawSettings["currency"] === "EUR" || rawSettings["currency"] === "GBP"
+          ? rawSettings["currency"]
+          : "INR",
     },
   };
 }

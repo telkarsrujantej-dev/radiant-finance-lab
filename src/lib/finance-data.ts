@@ -44,6 +44,16 @@ export type Settings = {
   userName: string;
   monthlyBudget: number;
   openingBalance: number;
+  currency: CurrencyCode;
+};
+
+export type CurrencyCode = "INR" | "USD" | "EUR" | "GBP";
+
+export const CURRENCIES: Record<CurrencyCode, { label: string; symbol: string; locale: string }> = {
+  INR: { label: "Indian Rupee", symbol: "₹", locale: "en-IN" },
+  USD: { label: "US Dollar", symbol: "$", locale: "en-US" },
+  EUR: { label: "Euro", symbol: "€", locale: "de-DE" },
+  GBP: { label: "British Pound", symbol: "£", locale: "en-GB" },
 };
 
 export const EXPENSE_CATEGORIES = [
@@ -307,6 +317,7 @@ export const seedSettings: Settings = {
   userName: "Srujan",
   monthlyBudget: 30000,
   openingBalance: 25000,
+  currency: "INR",
 };
 
 /** Archive figures for years before the tracked seed year (read-only history). */
@@ -322,6 +333,11 @@ export const historicalYears: { year: number; income: number; expenses: number }
 /* ------------------------------------------------------------------ */
 
 export const formatINR = (value: number) => `₹${Math.round(value).toLocaleString("en-IN")}`;
+
+export const formatMoney = (value: number, currency: CurrencyCode = "INR") => {
+  const details = CURRENCIES[currency] ?? CURRENCIES.INR;
+  return `${details.symbol}${Math.round(value).toLocaleString(details.locale)}`;
+};
 
 export const formatCompactINR = (value: number) =>
   value >= 1000 ? `₹${Math.round(value / 1000)}k` : `₹${Math.round(value)}`;
