@@ -22,6 +22,7 @@ import { Route as AuthenticatedRecurringRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSavingsRouteImport } from './routes/_authenticated/savings'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedAdminMembersRouteImport } from './routes/_authenticated/_admin/members'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -89,6 +90,11 @@ const AuthenticatedTransactionsRoute =
     path: '/transactions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminMembersRoute =
   AuthenticatedAdminMembersRouteImport.update({
     id: '/members',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/savings': typeof AuthenticatedSavingsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/chat': typeof ApiChatRoute
   '/members': typeof AuthenticatedAdminMembersRoute
 }
 export interface FileRoutesByTo {
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/savings': typeof AuthenticatedSavingsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/chat': typeof ApiChatRoute
   '/members': typeof AuthenticatedAdminMembersRoute
 }
 export interface FileRoutesById {
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated/savings': typeof AuthenticatedSavingsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/chat': typeof ApiChatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/_admin/members': typeof AuthenticatedAdminMembersRoute
 }
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/savings'
     | '/settings'
     | '/transactions'
+    | '/api/chat'
     | '/members'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/savings'
     | '/settings'
     | '/transactions'
+    | '/api/chat'
     | '/members'
   id:
     | '__root__'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/_authenticated/savings'
     | '/_authenticated/settings'
     | '/_authenticated/transactions'
+    | '/api/chat'
     | '/_authenticated/'
     | '/_authenticated/_admin/members'
   fileRoutesById: FileRoutesById
@@ -191,6 +203,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTransactionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/_admin/members': {
       id: '/_authenticated/_admin/members'
       path: '/members'
@@ -344,6 +364,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
