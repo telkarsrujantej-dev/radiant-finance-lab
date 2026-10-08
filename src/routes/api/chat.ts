@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import type { UIMessage } from "ai";
 
 import { createAssistantResponse, getAssistantAuth } from "@/lib/assistant.server";
 
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/api/chat")({
         try {
           const body = requestSchema.parse(await request.json());
           const { supabase, userId } = await getAssistantAuth(request);
-          return await createAssistantResponse(request, supabase, userId, body.messages as never[]);
+          return await createAssistantResponse(request, supabase, userId, body.messages as UIMessage[]);
         } catch (error) {
           if (error instanceof Response) return error;
           if (error instanceof DOMException && error.name === "AbortError") {

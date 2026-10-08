@@ -37,8 +37,8 @@ export async function getAssistantAuth(request: Request) {
     },
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
   });
-  const { data, error } = await supabase.auth.getClaims(token);
-  const userId = data?.claims?.sub;
+  const { data, error } = await supabase.auth.getUser(token);
+  const userId = data.user?.id;
   if (error || !userId) throw new Response("Unauthorized", { status: 401 });
 
   return { supabase, userId };
