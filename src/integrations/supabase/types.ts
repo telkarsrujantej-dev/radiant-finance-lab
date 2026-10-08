@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       finance_workspaces: {
         Row: {
+          assistant_messages: Json
           budgets: Json
           created_at: string
           goals: Json
@@ -27,6 +28,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          assistant_messages?: Json
           budgets?: Json
           created_at?: string
           goals?: Json
@@ -38,6 +40,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          assistant_messages?: Json
           budgets?: Json
           created_at?: string
           goals?: Json
