@@ -4,6 +4,12 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
 
+type StoredAssistantMessage = {
+  id: string;
+  role: "user" | "assistant";
+  parts: Json[];
+};
+
 const messageSchema: z.ZodType<StoredAssistantMessage> = z.object({
   id: z.string(),
   role: z.enum(["user", "assistant"]),
