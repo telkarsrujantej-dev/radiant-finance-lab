@@ -10,11 +10,11 @@ type StoredAssistantMessage = {
   parts: Json[];
 };
 
-const messageSchema = z.object({
+const messageSchema: z.ZodType<StoredAssistantMessage> = z.object({
   id: z.string(),
   role: z.enum(["user", "assistant"]),
   parts: z.array(z.unknown()).transform((parts) => parts as Json[]),
-}) as z.ZodType<StoredAssistantMessage>;
+});
 
 const messagesSchema = z.array(messageSchema);
 
@@ -28,7 +28,8 @@ export const loadAssistantMessages = createServerFn({ method: "GET" })
       .maybeSingle();
 
     if (error) throw new Error("Unable to load your assistant history.");
-    return messagesSchema.safeParse(data?.assistant_messages ?? []).data ?? [];
+    const parsed = messagesSchema.safeParse(data?.assistant_messages ?? []);
+    return parsed.success ? parsed.data : ([] as StoredAssistantMessage[]);
   });
 
 export const saveAssistantMessages = createServerFn({ method: "POST" })

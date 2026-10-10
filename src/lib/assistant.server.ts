@@ -89,7 +89,7 @@ export async function createAssistantResponse(
     onFinish: async ({ messages: completedMessages }) => {
       const { error } = await supabase
         .from("finance_workspaces")
-        .update({ assistant_messages: completedMessages as unknown as Json })
+        .update({ assistant_messages: JSON.parse(JSON.stringify(completedMessages)) as Json })
         .eq("user_id", userId);
       if (error) console.error("Assistant history save failed", error);
     },
