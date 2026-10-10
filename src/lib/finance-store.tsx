@@ -107,7 +107,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         if (cancelled) return;
 
         if (remote) {
-          setState({ ...remote, settings: { currency: "INR", ...remote.settings } });
+          setState(remote);
         } else {
           const legacy = readLegacyState() ?? initialState;
           setState(legacy);
