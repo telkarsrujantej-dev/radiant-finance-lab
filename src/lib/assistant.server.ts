@@ -1,7 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, validateUIMessages, type UIMessage } from "ai";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 
 import {
   createLovableAiGatewayRunIdFetch,
@@ -89,7 +89,7 @@ export async function createAssistantResponse(
     onFinish: async ({ messages: completedMessages }) => {
       const { error } = await supabase
         .from("finance_workspaces")
-        .update({ assistant_messages: completedMessages })
+        .update({ assistant_messages: JSON.parse(JSON.stringify(completedMessages)) as Json })
         .eq("user_id", userId);
       if (error) console.error("Assistant history save failed", error);
     },

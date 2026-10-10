@@ -2,12 +2,19 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Json } from "@/integrations/supabase/types";
 
-const messageSchema = z.object({
+type StoredAssistantMessage = {
+  id: string;
+  role: "user" | "assistant";
+  parts: Json[];
+};
+
+const messageSchema: z.ZodType<StoredAssistantMessage> = z.object({
   id: z.string(),
   role: z.enum(["user", "assistant"]),
-  parts: z.array(z.unknown()),
-});
+  parts: z.array(z.any()),
+}) as z.ZodType<StoredAssistantMessage>;
 
 const messagesSchema = z.array(messageSchema);
 
@@ -21,7 +28,8 @@ export const loadAssistantMessages = createServerFn({ method: "GET" })
       .maybeSingle();
 
     if (error) throw new Error("Unable to load your assistant history.");
-    return messagesSchema.safeParse(data?.assistant_messages ?? []).data ?? [];
+    const parsed = messagesSchema.safeParse(data?.assistant_messages ?? []);
+    return parsed.success ? parsed.data : [];
   });
 
 export const saveAssistantMessages = createServerFn({ method: "POST" })
@@ -34,7 +42,7 @@ export const saveAssistantMessages = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase
       .from("finance_workspaces")
-      .update({ assistant_messages: data.messages })
+      .update({ assistant_messages: data.messages as Json })
       .eq("user_id", context.userId);
 
     if (error) throw new Error("Unable to save your assistant history.");
