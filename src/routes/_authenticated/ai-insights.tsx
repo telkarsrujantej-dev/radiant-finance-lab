@@ -1,9 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, BarChart3, LockKeyhole, Sparkles } from "lucide-react";
+import { ArrowLeft, BarChart3, Lightbulb, LockKeyhole, Sparkles } from "lucide-react";
 
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useFinance } from "@/lib/finance-store";
+import { categoryTotals, computeTotals } from "@/lib/finance-selectors";
+import { formatMoney, periodFromPreset } from "@/lib/finance-data";
 
 const title = "AI Insights — Finance Tracker";
 const description = "A reserved space for future personalized finance insights in Finance Tracker.";
@@ -23,6 +26,23 @@ export const Route = createFileRoute("/_authenticated/ai-insights")({
 });
 
 function AiInsightsPage() {
+  const { state } = useFinance();
+  const period = periodFromPreset("this-year");
+  const totals = computeTotals(state, period);
+  const categories = categoryTotals(state.transactions, period);
+  const topCategory = categories[0];
+  const money = (value: number) => formatMoney(value, state.settings.currency);
+  const insights = [
+    totals.income > 0
+      ? `You are saving ${Math.round((totals.savings / totals.income) * 100)}% of recorded income this year.`
+      : "Add an income transaction to unlock savings-rate guidance.",
+    topCategory
+      ? `${topCategory.name} is your largest expense category at ${money(topCategory.value)}.`
+      : "Add expenses to see where your money is going.",
+    totals.budget > 0
+      ? `Your recorded spending is ${Math.round((totals.expenses / totals.budget) * 100)}% of your monthly budget.`
+      : "Set a monthly budget to track spending headroom.",
+  ];
   return (
     <PageShell subtitle="Personalized guidance" title="AI Insights">
       <Card className="relative overflow-hidden rounded-2xl border-border/60 p-6 shadow-[var(--shadow-soft)] sm:p-10">
@@ -31,25 +51,20 @@ function AiInsightsPage() {
           <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
             <Sparkles className="h-6 w-6" />
           </span>
-          <p className="mt-6 text-sm font-medium text-primary">Coming soon</p>
+          <p className="mt-6 text-sm font-medium text-primary">Workspace-aware guidance</p>
           <h2 className="font-display mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-            Smarter money decisions are on the way
+            A clearer view of your money
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
-            This prototype keeps your finance workspace focused on reliable local tracking.
-            Personalized recommendations will be added in a future release.
+            These summaries are generated from your saved transactions, budgets, and goals. For deeper questions, use Finance Assistant.
           </p>
-          <div className="mt-8 grid gap-3 text-left sm:grid-cols-2">
-            <Feature
-              icon={BarChart3}
-              title="Pattern summaries"
-              text="See meaningful changes across your spending history."
-            />
-            <Feature
-              icon={LockKeyhole}
-              title="Private by design"
-              text="Your current data remains in this browser only."
-            />
+          <div className="mt-8 grid gap-3 text-left">
+            {insights.map((insight) => (
+              <div key={insight} className="flex gap-3 rounded-xl border border-border/60 bg-muted/40 p-4">
+                <Lightbulb className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                <p className="text-sm leading-relaxed">{insight}</p>
+              </div>
+            ))}
           </div>
           <Button asChild variant="outline" className="mt-8 rounded-xl">
             <Link to="/">
@@ -63,20 +78,3 @@ function AiInsightsPage() {
   );
 }
 
-function Feature({
-  icon: Icon,
-  title: featureTitle,
-  text,
-}: {
-  icon: typeof BarChart3;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border/60 bg-muted/40 p-4">
-      <Icon className="h-5 w-5 text-primary" />
-      <p className="mt-3 text-sm font-medium">{featureTitle}</p>
-      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{text}</p>
-    </div>
-  );
-}
