@@ -20,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useFinance } from "@/lib/finance-store";
+import { CURRENCIES, type CurrencyCode } from "@/lib/finance-data";
 
 const title = "Settings — Finance Tracker";
 const description = "Manage your Finance Tracker preferences and review account connection status.";
@@ -43,6 +44,7 @@ function SettingsPage() {
   const [userName, setUserName] = useState(state.settings.userName);
   const [monthlyBudget, setMonthlyBudget] = useState(String(state.settings.monthlyBudget));
   const [openingBalance, setOpeningBalance] = useState(String(state.settings.openingBalance));
+  const [currency, setCurrency] = useState<CurrencyCode>(state.settings.currency);
 
   const save = (event: React.FormEvent) => {
     event.preventDefault();
@@ -56,7 +58,7 @@ function SettingsPage() {
       toast.error("Check your amounts");
       return;
     }
-    updateSettings({ userName: userName.trim(), monthlyBudget: budget, openingBalance: balance });
+    updateSettings({ userName: userName.trim(), monthlyBudget: budget, openingBalance: balance, currency });
     toast.success("Settings saved");
   };
 
@@ -102,7 +104,7 @@ function SettingsPage() {
             <div>
               <h2 className="font-display text-lg font-semibold tracking-tight">Preferences</h2>
               <p className="text-sm text-muted-foreground">
-                These values power your local dashboard.
+                These values power your dashboard and personal preferences.
               </p>
             </div>
           </div>
@@ -117,7 +119,7 @@ function SettingsPage() {
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="settings-budget">Monthly budget (₹)</Label>
+                  <Label htmlFor="settings-budget">Monthly budget ({currency})</Label>
                 <Input
                   id="settings-budget"
                   type="number"
@@ -127,7 +129,7 @@ function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="settings-balance">Opening balance (₹)</Label>
+                  <Label htmlFor="settings-balance">Opening balance ({currency})</Label>
                 <Input
                   id="settings-balance"
                   type="number"
@@ -136,6 +138,19 @@ function SettingsPage() {
                   onChange={(e) => setOpeningBalance(e.target.value)}
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="settings-currency">Currency</Label>
+              <select
+                id="settings-currency"
+                value={currency}
+                onChange={(event) => setCurrency(event.target.value as CurrencyCode)}
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                {Object.entries(CURRENCIES).map(([code, details]) => (
+                  <option key={code} value={code}>{details.label} ({details.symbol})</option>
+                ))}
+              </select>
             </div>
             <Button type="submit" className="rounded-xl">
               Save Settings

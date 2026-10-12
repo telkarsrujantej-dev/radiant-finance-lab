@@ -39,6 +39,14 @@ const initialState: FinanceState = {
   settings: seedSettings,
 };
 
+const blankState: FinanceState = {
+  transactions: [],
+  budgets: [],
+  goals: [],
+  recurring: [],
+  settings: { userName: "", monthlyBudget: 30000, openingBalance: 0, currency: "INR" },
+};
+
 type FinanceContextValue = {
   state: FinanceState;
   hydrated: boolean;
@@ -50,6 +58,7 @@ type FinanceContextValue = {
   deleteBudget: (id: string) => void;
   upsertGoal: (g: Goal) => void;
   addToGoal: (id: string, amount: number) => void;
+  withdrawFromGoal: (id: string, amount: number) => void;
   deleteGoal: (id: string) => void;
   upsertRecurring: (r: Recurring) => void;
   toggleRecurring: (id: string) => void;
@@ -109,7 +118,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         if (remote) {
           setState(remote);
         } else {
-          const legacy = readLegacyState() ?? initialState;
+          const legacy = readLegacyState() ?? blankState;
           setState(legacy);
           await saveWorkspace({ data: legacy });
         }
@@ -193,6 +202,16 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     setSynced(true);
   }, []);
 
+  const withdrawFromGoal = useCallback((id: string, amount: number) => {
+    setState((s) => ({
+      ...s,
+      goals: s.goals.map((g) =>
+        g.id === id ? { ...g, saved: Math.max(0, g.saved - amount) } : g,
+      ),
+    }));
+    setSynced(true);
+  }, []);
+
   const deleteGoal = useCallback((id: string) => {
     setState((s) => ({ ...s, goals: s.goals.filter((x) => x.id !== id) }));
     setSynced(true);
@@ -243,6 +262,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       deleteBudget,
       upsertGoal,
       addToGoal,
+      withdrawFromGoal,
       deleteGoal,
       upsertRecurring,
       toggleRecurring,
@@ -261,6 +281,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       deleteBudget,
       upsertGoal,
       addToGoal,
+      withdrawFromGoal,
       deleteGoal,
       upsertRecurring,
       toggleRecurring,
