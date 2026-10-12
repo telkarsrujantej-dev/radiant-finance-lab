@@ -39,6 +39,14 @@ const initialState: FinanceState = {
   settings: seedSettings,
 };
 
+const blankState: FinanceState = {
+  transactions: [],
+  budgets: [],
+  goals: [],
+  recurring: [],
+  settings: { userName: "", monthlyBudget: 30000, openingBalance: 0, currency: "INR" },
+};
+
 type FinanceContextValue = {
   state: FinanceState;
   hydrated: boolean;
@@ -110,7 +118,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         if (remote) {
           setState(remote);
         } else {
-          const legacy = readLegacyState() ?? initialState;
+          const legacy = readLegacyState() ?? blankState;
           setState(legacy);
           await saveWorkspace({ data: legacy });
         }

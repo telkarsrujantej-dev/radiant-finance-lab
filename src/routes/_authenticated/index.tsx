@@ -21,6 +21,7 @@ import {
   yearlySeries,
 } from "@/lib/finance-selectors";
 import { periodFromPreset, type Period } from "@/lib/finance-data";
+import { OnboardingCard } from "@/components/dashboard/OnboardingCard";
 
 const title = "Finance Tracker — Personal Finance Dashboard";
 const description =
@@ -74,6 +75,8 @@ function Dashboard() {
       }
     >
       <SummaryCards totals={totals} loading={loading} />
+
+      {!state.settings.userName && <OnboardingCard />}
 
       <ExpensesChart loading={loading} monthly={monthly} yearly={yearly} />
 
