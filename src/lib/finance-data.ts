@@ -10,6 +10,7 @@ export type Transaction = {
   method: string;
   notes?: string | undefined;
   source?: "manual" | "upi-import";
+  importFingerprint?: string;
 };
 
 export type Budget = {
