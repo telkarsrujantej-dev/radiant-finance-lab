@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Pencil, Plus, Trash2, Wallet } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Pencil, Plus, Trash2, Wallet } from "lucide-react";
 
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useFinance } from "@/lib/finance-store";
-import { formatDate, formatINR, type Goal } from "@/lib/finance-data";
+import { formatDate, formatMoney, type Goal } from "@/lib/finance-data";
 
 const title = "Savings Goals — Finance Tracker";
 const description = "Create savings goals, add money and track progress toward each target date.";
@@ -37,7 +37,8 @@ export const Route = createFileRoute("/_authenticated/savings")({
 });
 
 function SavingsPage() {
-  const { state, upsertGoal, addToGoal, deleteGoal } = useFinance();
+  const { state, upsertGoal, addToGoal, withdrawFromGoal, deleteGoal, addTransaction } = useFinance();
+  const money = (value: number) => formatMoney(value, state.settings.currency);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Goal | null>(null);
   const [name, setName] = useState("");
@@ -116,7 +117,7 @@ function SavingsPage() {
                   <div>
                     <p className="font-display text-base font-semibold tracking-tight">{g.name}</p>
                     <p className="text-sm text-muted-foreground">
-                      {formatINR(g.saved)} / {formatINR(g.target)}
+                      {money(g.saved)} / {money(g.target)}
                     </p>
                   </div>
                 </div>
@@ -157,12 +158,12 @@ function SavingsPage() {
               <Button
                 variant="outline"
                 className="mt-4 w-full rounded-xl"
-                onClick={() => {
+                 onClick={() => {
                   setMoneyFor(g);
                   setMoneyAmount("");
                 }}
               >
-                Add Money
+                 <ArrowUpFromLine className="h-4 w-4" /> Add or withdraw
               </Button>
             </Card>
           );
@@ -235,13 +236,25 @@ function SavingsPage() {
                 return;
               }
               if (moneyFor) addToGoal(moneyFor.id, value);
-              toast.success(`${formatINR(value)} added to ${moneyFor?.name}`);
+               if (moneyFor) {
+                 addTransaction({
+                   name: `Savings deposit · ${moneyFor.name}`,
+                   category: "Savings",
+                   date: new Date().toISOString().slice(0, 10),
+                   amount: value,
+                   kind: "expense",
+                   method: "Bank Transfer",
+                   notes: "Recorded from savings goal",
+                   source: "manual",
+                 });
+               }
+               toast.success(`${money(value)} added to ${moneyFor?.name}`);
               setMoneyFor(null);
             }}
             className="space-y-4"
           >
             <div className="space-y-2">
-              <Label htmlFor="money">Amount (₹)</Label>
+             <Label htmlFor="money">Amount ({state.settings.currency})</Label>
               <Input
                 id="money"
                 type="number"
@@ -252,7 +265,24 @@ function SavingsPage() {
             </div>
             <DialogFooter>
               <Button type="submit" className="w-full rounded-xl">
-                Add
+                <ArrowUpFromLine className="h-4 w-4" /> Add money
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full rounded-xl"
+                onClick={() => {
+                  const value = Number(moneyAmount);
+                  if (!value || value <= 0 || !moneyFor) {
+                    toast.error("Enter a valid amount");
+                    return;
+                  }
+                  withdrawFromGoal(moneyFor.id, value);
+                  toast.success(`${money(value)} withdrawn from ${moneyFor.name}`);
+                  setMoneyFor(null);
+                }}
+              >
+                <ArrowDownToLine className="h-4 w-4" /> Withdraw money
               </Button>
             </DialogFooter>
           </form>
