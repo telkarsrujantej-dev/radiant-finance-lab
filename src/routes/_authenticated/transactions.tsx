@@ -116,7 +116,9 @@ function TransactionsPage() {
       toast.error("CSV needs a header row and at least one transaction");
       return;
     }
-    const headers = rows[0].split(",").map((header) => header.trim().toLowerCase());
+    const headerRow = rows[0];
+    if (!headerRow) return;
+    const headers = headerRow.split(",").map((header) => header.trim().toLowerCase());
     const column = (...names: string[]) => names.map((name) => headers.indexOf(name)).find((index) => index >= 0) ?? -1;
     const dateIndex = column("date", "transaction date");
     const nameIndex = column("name", "description", "merchant");
