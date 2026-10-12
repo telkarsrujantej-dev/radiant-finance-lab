@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
@@ -6,6 +6,7 @@ import {
   Bus,
   Clapperboard,
   Download,
+  FileUp,
   GraduationCap,
   HeartPulse,
   Pencil,
@@ -47,7 +48,7 @@ import {
   ALL_CATEGORIES,
   PAYMENT_METHODS,
   formatDate,
-  formatINR,
+  formatMoney,
   periodFromPreset,
   type Period,
   type Transaction,
@@ -95,7 +96,8 @@ function toCSV(rows: Transaction[]) {
 }
 
 function TransactionsPage() {
-  const { state, deleteTransaction } = useFinance();
+  const { state, addTransaction, deleteTransaction } = useFinance();
+  const money = (value: number) => formatMoney(value, state.settings.currency);
   const [period, setPeriod] = useState<Period>(() => periodFromPreset("this-year"));
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<"all" | "income" | "expense">("all");
@@ -105,6 +107,56 @@ function TransactionsPage() {
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Transaction | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const importCSV = async (file: File) => {
+    const text = await file.text();
+    const rows = text.split(/\r?\n/).filter(Boolean);
+    if (rows.length < 2) {
+      toast.error("CSV needs a header row and at least one transaction");
+      return;
+    }
+    const headers = rows[0].split(",").map((header) => header.trim().toLowerCase());
+    const column = (...names: string[]) => names.map((name) => headers.indexOf(name)).find((index) => index >= 0) ?? -1;
+    const dateIndex = column("date", "transaction date");
+    const nameIndex = column("name", "description", "merchant");
+    const amountIndex = column("amount", "value");
+    const typeIndex = column("type", "kind");
+    const categoryIndex = column("category");
+    const methodIndex = column("method", "payment method");
+    if (dateIndex < 0 || nameIndex < 0 || amountIndex < 0) {
+      toast.error("CSV must include Date, Name, and Amount columns");
+      return;
+    }
+    const existing = new Set(state.transactions.map((t) => t.importFingerprint));
+    let imported = 0;
+    let skipped = 0;
+    for (const row of rows.slice(1)) {
+      const values = row.split(",").map((value) => value.trim().replace(/^"|"$/g, ""));
+      const date = values[dateIndex];
+      const name = values[nameIndex];
+      const amount = Math.abs(Number(values[amountIndex]));
+      if (!date || !name || !amount || Number.isNaN(Date.parse(date))) { skipped += 1; continue; }
+      const kind = (values[typeIndex] ?? "expense").toLowerCase().includes("income") ? "income" : "expense";
+      const fingerprint = [date, name.toLowerCase(), amount, kind].join("|");
+      if (existing.has(fingerprint)) { skipped += 1; continue; }
+      addTransaction({
+        date,
+        name,
+        amount,
+        kind,
+        category: values[categoryIndex] || "Other",
+        method: values[methodIndex] || "Other",
+        source: "upi-import",
+        importFingerprint: fingerprint,
+      });
+      existing.add(fingerprint);
+      imported += 1;
+    }
+    toast.success(`${imported} transaction${imported === 1 ? "" : "s"} imported`, {
+      description: skipped ? `${skipped} invalid or duplicate rows skipped.` : undefined,
+    });
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -140,6 +192,14 @@ function TransactionsPage() {
           <Button variant="outline" className="rounded-xl border-border/70" onClick={exportCSV}>
             <Download className="h-4 w-4" />
             Export CSV
+          </Button>
+          <input ref={fileInputRef} type="file" accept=".csv,text/csv" className="hidden" onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) void importCSV(file);
+            event.target.value = "";
+          }} />
+          <Button variant="outline" className="rounded-xl border-border/70" onClick={() => fileInputRef.current?.click()}>
+            <FileUp className="h-4 w-4" /> Import CSV
           </Button>
           <AddTransactionButton />
         </>
@@ -231,7 +291,7 @@ function TransactionsPage() {
                     )}
                   >
                     {income ? "+" : "−"}
-                    {formatINR(t.amount)}
+                     {money(t.amount)}
                   </p>
                   <div className="flex items-center gap-1">
                     <Button
@@ -282,7 +342,7 @@ function TransactionsPage() {
               Are you sure you want to delete this transaction?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {pendingDelete?.name} · {pendingDelete && formatINR(pendingDelete.amount)}. This
+               {pendingDelete?.name} · {pendingDelete && money(pendingDelete.amount)}. This
               action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
